@@ -67,6 +67,30 @@ sys_dup(void)
 }
 
 int
+sys_dup2(void)
+{
+  int src, dst;
+  struct file *srcf, *dstf;
+  struct proc *curproc = myproc();
+  
+  if (argint(0, &src) < 0 || argint(1, &dst) < 0)
+    return -1;
+  if (src < 0 || dst < 0 || src >= NOFILE || dst >= NOFILE)
+    return -1;
+  if ((srcf=curproc->ofile[src]) == 0)
+    return -1;
+  if (src == dst)
+    return dst;
+
+  if ((dstf=curproc->ofile[dst]) != 0)
+    fileclose(dstf);
+  
+  filedup(srcf);
+  curproc->ofile[dst] = srcf;
+  return dst;
+}
+
+int
 sys_read(void)
 {
   struct file *f;
