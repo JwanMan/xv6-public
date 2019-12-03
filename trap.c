@@ -77,6 +77,21 @@ trap(struct trapframe *tf)
             cpuid(), tf->cs, tf->eip);
     lapiceoi();
     break;
+  // Handling page fault.
+  case T_PGFLT:
+    if(myproc() == 0 || (tf->cs&3) == 0){
+      // In kernel, it must be our mistake.
+      cprintf("unexpected trap %d from cpu %d eip %x (cr2=0x%x)\n",
+              tf->trapno, cpuid(), tf->eip, rcr2());
+      panic("Page fault into the kernel!");
+    }
+    // In user space, assume process misbehaved.
+    cprintf("Page fault: pid %d %s: trap %d err %d on cpu %d "
+            "eip 0x%x addr 0x%x--kill proc\n",
+            myproc()->pid, myproc()->name, tf->trapno,
+            tf->err, cpuid(), tf->eip, rcr2());
+    myproc()->killed = 1;
+    break;
 
   //PAGEBREAK: 13
   default:
