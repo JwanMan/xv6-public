@@ -8,6 +8,12 @@
 #include "traps.h"
 #include "spinlock.h"
 
+#define PGFLT_P 1
+#define PGFLT_W 2
+#define PGFLT_U 4
+#define PGFLT_R 8
+#define PGFLT_I 16
+
 // Interrupt descriptor table (shared by all CPUs).
 struct gatedesc idt[256];
 extern uint vectors[];  // in vectors.S: array of 256 entry pointers
@@ -83,14 +89,14 @@ trap(struct trapframe *tf)
     break;
   // Handling page fault.
   case T_PGFLT:
-    if(myproc() == 0 || (tf->cs&3) == 0){
-      // In kernel, it must be our mistake.
-      cprintf("unexpected trap %d from cpu %d eip %x (cr2=0x%x)\n",
-              tf->trapno, cpuid(), tf->eip, rcr2());
-      panic("Page fault into the kernel!");
+    // Check for stack overflow.
+    if (rcr2() < KERNBASE && tf->err & PGFLT_P) {
+      cprintf("StackOverflow.com _\\|\n");
+      myproc()->killed = 1;
+      break;
     }
-    // In user space, check if address is in heap.
-    if (rcr2() < myproc()->sz) {
+    // Check if address is in heap.
+    if (myproc() != 0 && rcr2() < myproc()->sz) {
       mem = kalloc();
       if (mem == 0) {
         cprintf("Out of memory -.-\n");
@@ -103,7 +109,13 @@ trap(struct trapframe *tf)
         kfree(mem);
       }
       break;
-    }    
+    }
+    if(myproc() == 0 || (tf->cs&3) == 0){
+      // In kernel, it must be our mistake.
+      cprintf("unexpected trap %d from cpu %d eip %x (cr2=0x%x)\n",
+              tf->trapno, cpuid(), tf->eip, rcr2());
+      panic("Page fault into the kernel!");
+    }
     // Otherwise, assume process misbehaved.
     cprintf("Page fault: pid %d %s: trap %d err %d on cpu %d "
             "eip 0x%x addr 0x%x--kill proc\n",

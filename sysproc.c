@@ -45,7 +45,7 @@ sys_getpid(void)
 int
 sys_sbrk(void)
 {
-  int addr;
+  uint addr;
   int n;
 
   if(argint(0, &n) < 0)
@@ -54,7 +54,14 @@ sys_sbrk(void)
   addr = proc->sz;
   if (((unsigned)addr) + n > KERNBASE)
     return -1;
+
+  if (n < 0) {
+    if (addr < (uint)(-n))
+      return -1;
+    deallocuvm(proc->pgdir, addr, addr + n);
+  }
   proc->sz = addr + n;
+  switchuvm(proc);
   return addr;
 }
 
