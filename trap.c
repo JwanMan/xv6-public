@@ -14,6 +14,8 @@ extern uint vectors[];  // in vectors.S: array of 256 entry pointers
 struct spinlock tickslock;
 uint ticks;
 
+int mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm);
+
 void
 tvinit(void)
 {
@@ -36,6 +38,8 @@ idtinit(void)
 void
 trap(struct trapframe *tf)
 {
+  char *mem;
+  
   if(tf->trapno == T_SYSCALL){
     if(myproc()->killed)
       exit();
@@ -85,7 +89,22 @@ trap(struct trapframe *tf)
               tf->trapno, cpuid(), tf->eip, rcr2());
       panic("Page fault into the kernel!");
     }
-    // In user space, assume process misbehaved.
+    // In user space, check if address is in heap.
+    if (rcr2() < myproc()->sz) {
+      mem = kalloc();
+      if (mem == 0) {
+        cprintf("Out of memory -.-\n");
+        break;
+      }
+      memset(mem, 0, PGSIZE);
+      if (mappages(myproc()->pgdir, (void*)PGROUNDDOWN(rcr2()),
+                   PGSIZE, V2P(mem), PTE_W|PTE_U) < 0) {
+        cprintf("Out of memory.\n");
+        kfree(mem);
+      }
+      break;
+    }    
+    // Otherwise, assume process misbehaved.
     cprintf("Page fault: pid %d %s: trap %d err %d on cpu %d "
             "eip 0x%x addr 0x%x--kill proc\n",
             myproc()->pid, myproc()->name, tf->trapno,

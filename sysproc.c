@@ -52,7 +52,7 @@ sys_sbrk(void)
     return -1;
   struct proc* proc = myproc();
   addr = proc->sz;
-  if (addr + n > KERNBASE)
+  if (((unsigned)addr) + n > KERNBASE)
     return -1;
   proc->sz = addr + n;
   return addr;
