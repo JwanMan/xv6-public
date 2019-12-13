@@ -1,0 +1,2292 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\begin_modules
+theorems-ams
+fixltx2e
+tcolorbox
+\end_modules
+\maintain_unincluded_children false
+\language spanish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing other 1.15
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Ampliación de Sistemas Operativos - XV6
+\end_layout
+
+\begin_layout Author
+Juan Marín Noguera y Eduardo Gambín Monserrat
+\end_layout
+
+\begin_layout Section
+Introducción
+\end_layout
+
+\begin_layout Standard
+En esta memoria detallamos de forma concisa los cambios que hemos realizado
+ al 
+\emph on
+xv6
+\emph default
+.
+ Los hemos detallado por boletines en el orden visto en clase.
+ Los fragmentos de código que hemos añadido vienen descritos en cuadros
+ para su fácil lectura.
+\end_layout
+
+\begin_layout Section
+Boletín 6
+\end_layout
+
+\begin_layout Standard
+En este boletín implementamos las llamadas al sistema 
+\family typewriter
+date
+\family default
+\emph on
+ 
+\emph default
+y 
+\family typewriter
+dup2
+\family default
+.
+
+\emph on
+ 
+\emph default
+Empezamos por añadir al proyecto los archivos 
+\family typewriter
+date.c
+\family default
+ y 
+\family typewriter
+dup2test.c
+\family default
+.
+ Además, para poder utilizar estos dos archivos, es necesario que añadamos
+ una entrada al archivo 
+\family typewriter
+Makefile
+\family default
+, en concreto las líneas 
+\family typewriter
+_date
+\backslash
+
+\family default
+ y 
+\family typewriter
+_dup2test
+\backslash
+ 
+\family default
+al final del apartado 
+\family typewriter
+UPROGS
+\family default
+.
+ Una vez hecho esto, pasamos a detallar la implementación de cada una de
+ ellas.
+\end_layout
+
+\begin_layout Subsection
+Llamada al sistema 
+\family typewriter
+date
+\end_layout
+
+\begin_layout Standard
+Esta llamada al sistema permite ver la hora y la fecha.
+ Para el formato, se ha decidido utilizar el formato 
+\series bold
+INSERTAR FORMATO DE FECHA
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+Para implementarla, lo primero es acceder a los ficheros 
+\family typewriter
+syscall.h
+\family default
+, 
+\family typewriter
+usys.S
+\family default
+, 
+\family typewriter
+syscall.c
+\family default
+ y 
+\family typewriter
+user.h
+\family default
+ en los que añadimos respectivamente los siguientes fragmentos de código.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+#define SYS_close	21
+\end_layout
+
+\begin_layout Plain Layout
+
+#define SYS_date	22	// Añadido en el ejercicio 6.1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language={[x86masm]Assembler},basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+SYSCALL(uptime)
+\end_layout
+
+\begin_layout Plain Layout
+
+SYSCALL(date)	; Añadido en el ejercicio 6.1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+extern int sys_uptime(void);
+\end_layout
+
+\begin_layout Plain Layout
+
+extern int sys_date(void);	// Añadido en el ejercicio 6.1
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+int uptime(void);
+\end_layout
+
+\begin_layout Plain Layout
+
+int date(struct rtcdate*);	// Añadido en el ejercicio 6.1
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Estas cuatro operaciones van a ser necesarias cada vez que haya que implementar
+ una llamada al sistema.
+ Procedemos ahora sí a definir la función en el archivo 
+\family typewriter
+sysproc.c
+\family default
+.
+ El código final de la llamada es este.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+IGUAL ESTARÍA BIEN DECIR QUÉ HACE ARGINT
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language={C++},basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+int
+\end_layout
+
+\begin_layout Plain Layout
+
+sys_date(void)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	struct rtcdate* ptr;
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (argint(0, (int*)&ptr) < 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+		return -1;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	cmostime(ptr);
+\end_layout
+
+\begin_layout Plain Layout
+
+	return 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por último, en el archivo 
+\family typewriter
+date.c
+\family default
+ añadimos
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language={C++},basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+	printf(1, 
+\begin_inset Quotes eld
+\end_inset
+
+%d-%d-%dT%d:%d:%d
+\backslash
+n", r.year, r.month, r.day, r.hour, r.minute, r.second);
+\end_layout
+
+\begin_layout Plain Layout
+
+	exit();
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Llamada al sistema 
+\family typewriter
+dup2
+\end_layout
+
+\begin_layout Standard
+Debemos añadir de nuevo en los cuatro ficheros antes mencionados la llamada
+ al sistema.
+ Para ello, añadimos lo siguiente (cada recuadro representa un fichero distinto).
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+#define SYS_close	21
+\end_layout
+
+\begin_layout Plain Layout
+
+#define SYS_date	22	// Añadido en el ejercicio 6.1
+\end_layout
+
+\begin_layout Plain Layout
+
+#define SYS_dup2	23	// Añadido en el ejercicio 6.2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language={[x86masm]Assembler},basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+SYSCALL(uptime)
+\end_layout
+
+\begin_layout Plain Layout
+
+SYSCALL(date)	; Añadido en el ejercicio 6.1
+\end_layout
+
+\begin_layout Plain Layout
+
+SYSCALL(dup2)	; Añadido en el ejercicio 6.2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+extern int sys_uptime(void);
+\end_layout
+
+\begin_layout Plain Layout
+
+extern int sys_date(void);	// Añadido en el ejercicio 6.1
+\end_layout
+
+\begin_layout Plain Layout
+
+extern int sys_dup2(void);	// Añadido en el ejercicio 6.2
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+int uptime(void);
+\end_layout
+
+\begin_layout Plain Layout
+
+int date(struct rtcdate*);	// Añadido en el ejercicio 6.1
+\end_layout
+
+\begin_layout Plain Layout
+
+int dup2(int src, int dst);	// Añadido en el ejercicio 6.2
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En el ejercicio se nos indica que revisemos la implementación de 
+\family typewriter
+dup
+\family default
+ y la usemos como ejemplo.
+ Esta función se encuentra definida en el archivo 
+\family typewriter
+sysfile.c
+\family default
+.
+ El código final de la función es el siguiente.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+FALTA COMENTAR UN POCO QUÉ HACEMOS
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+int
+\end_layout
+
+\begin_layout Plain Layout
+
+sys_dup2(void)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	int src, dst;
+\end_layout
+
+\begin_layout Plain Layout
+
+	struct file *srcf, *dstf;
+\end_layout
+
+\begin_layout Plain Layout
+
+	struct proc *curproc = myproc();
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (argint(0, &src) < 0 || argint(1, &dst) < 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+		return -1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (src < 0 || dst < 0 || src >= NOFILE || dst >= NOFILE)
+\end_layout
+
+\begin_layout Plain Layout
+
+		return -1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	if ((srcf=curproc->ofile[src]) == 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+		return -1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (src == dst) return dst;
+\end_layout
+
+\begin_layout Plain Layout
+
+	if ((dstf=curproc->ofile[dst]) != 0) fileclose(dstf);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	filedup(srcf);
+\end_layout
+
+\begin_layout Plain Layout
+
+	curproc->ofile[dst] = srcf;
+\end_layout
+
+\begin_layout Plain Layout
+
+	return dst;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Boletín 7
+\end_layout
+
+\begin_layout Standard
+En este boletín nos piden únicamente modificar la llamada al sistema 
+\family typewriter
+sbrk
+\family default
+ para que, en lugar de reservar memoria directamente cuando un proceso lo
+ solicite, le asigne memoria y la reserve únicamente cuando el proceso intente
+ utilizarla (
+\emph on
+lazy allocation
+\emph default
+).
+ Para ello, debemos primero implementarla para que funcione con casos sencillos
+ y más tarde modificarla para que funcione en todas las situaciones.
+\end_layout
+
+\begin_layout Standard
+Antes de nada, descargamos y añadimos los archivos 
+\family typewriter
+tsbrk*.c
+\family default
+ tanto al proyecto como a la sección de 
+\family typewriter
+UPROGS
+\family default
+ en el 
+\family typewriter
+Makefile
+\family default
+.
+ Una vez hecho esto, pasamos a la implementación.
+\end_layout
+
+\begin_layout Subsection
+Implementando el 
+\emph on
+lazy allocation
+\end_layout
+
+\begin_layout Standard
+Lo primero que debemos hacer es evitar que el proceso adquiera memoria física
+ cuando se produce un 
+\family typewriter
+sbrk
+\family default
+.
+ Para ello, modificamos el archivo 
+\family typewriter
+sysproc.c
+\family default
+ para que quede de la forma siguiente.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+int
+\end_layout
+
+\begin_layout Plain Layout
+
+sys_sbrk(void)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	int addr, n;
+\end_layout
+
+\begin_layout Plain Layout
+
+	struct proc* proc;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(argint(0, &n) < 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+		return -1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	proc = myproc();
+\end_layout
+
+\begin_layout Plain Layout
+
+	addr = proc->sz;
+\end_layout
+
+\begin_layout Plain Layout
+
+	if ((unsigned)addr + n > KERNBASE)
+\end_layout
+
+\begin_layout Plain Layout
+
+		return -1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	proc->sz = addr + n;
+\end_layout
+
+\begin_layout Plain Layout
+
+	return addr;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hemos eliminado el uso de la función 
+\family typewriter
+growproc
+\family default
+ y en su lugar únicamente aumentamos el tamaño del proceso, sin asignarle
+ memoria física.
+ Debemos ahora manejar los fallos de página por si el proceso intenta acceder
+ a una paǵina que no tiene alojada.
+ En el archivo 
+\family typewriter
+trap.c
+\family default
+, añadimos el siguiente código.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+int mappages(pde_t* pgdir, void* va, uint size, uint pa, int perm);
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+// Handling page fault.
+\end_layout
+
+\begin_layout Plain Layout
+
+case T_PGFLT:
+\end_layout
+
+\begin_layout Plain Layout
+
+	char* mem;
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(myproc() == 0 || (tf->cs & 3) == 0) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		// In kernel, it must be our mistake.
+\end_layout
+
+\begin_layout Plain Layout
+
+		cprintf("unexpected trap %d from cpu %d eip %x (cr2=0x%x)
+\backslash
+n", tf->trapno, cpuid(), tf->eip, rcr2());
+\end_layout
+
+\begin_layout Plain Layout
+
+		panic("Page fault into the kernel!");
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	// In user space, check if address is in heap.
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (rcr2() < myproc()->sz) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		mem = kalloc();
+\end_layout
+
+\begin_layout Plain Layout
+
+		if (mem == 0) {
+\end_layout
+
+\begin_layout Plain Layout
+
+			cprintf("Out of memory.
+\backslash
+n");
+\end_layout
+
+\begin_layout Plain Layout
+
+			break;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		memset(mem, 0, PGSIZE);
+\end_layout
+
+\begin_layout Plain Layout
+
+		if (mappages(myproc()->pgdir, (void*)PGROUNDDOWN(rcr2()), PGSIZE, V2P(mem),
+ PTE_W|PTE_U) < 0) {
+\end_layout
+
+\begin_layout Plain Layout
+
+			cprintf("Out of memory.
+\backslash
+n");
+\end_layout
+
+\begin_layout Plain Layout
+
+			kfree(mem);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		break;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	// Otherwise, assume process misbehaved.
+\end_layout
+
+\begin_layout Plain Layout
+
+	cprintf("Page fault: pid %d %s: trap %d err %d on cpu %d eip
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\begin_inset Quotes eld
+\end_inset
+
+0x%x addr 0x%x--kill proc
+\backslash
+n", myproc()->pid, myproc()->name,
+\end_layout
+
+\begin_layout Plain Layout
+
+		tf->trapno, tf->err, cpuid(), tf->eip, rcr2());
+\end_layout
+
+\begin_layout Plain Layout
+
+	myproc()->killed = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	break;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hemos añadido una línea al principio del fichero declarando la función 
+\family typewriter
+mappages
+\family default
+.
+ Esto se debe a la forma que tiene C de enlazar los archivos: si llamamos
+ a una función determinada aunque nunca la definamos en dicho archivo, si
+ esta definición viene dada en otra parte del programa, C asumirá que esa
+ es a la que nos referimos y la utilizará.
+ Es por esto, además, que debemos modificar la definición de dicha función
+ en el archivo 
+\family typewriter
+vm.c
+\family default
+, ya que para poder utilizar esto la función no puede ser declarada como
+ estática.
+\end_layout
+
+\begin_layout Subsection
+Aumentando la funcionalidad
+\end_layout
+
+\begin_layout Standard
+Se nos pide ahora que arreglemos ciertos fallos en la funcionalidad de 
+\family typewriter
+sbrk
+\family default
+.
+ En primer lugar, debemos comprobar el caso de que se llame a 
+\family typewriter
+sbrk
+\family default
+ con un argumento negativo.
+ En ese caso, lo que intentamos hacer es desalojar memoria, por lo que debemos
+ tratar dicho caso.
+ Modificamos el final de la función 
+\family typewriter
+sys_sbrk
+\family default
+ del archivo 
+\family typewriter
+sysproc.c
+\family default
+, para desalojar memoria en caso de 
+\family typewriter
+n
+\family default
+ que sea negativa.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (n < 0) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		if (addr < -n)
+\end_layout
+
+\begin_layout Plain Layout
+
+			return -1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		deallocuvm(proc->pgdir, addr, addr + n);
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	proc->sz = addr + n;
+\end_layout
+
+\begin_layout Plain Layout
+
+	switchuvm(proc);
+\end_layout
+
+\begin_layout Plain Layout
+
+	return addr;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Se nos pide ahora que comprobemos el caso de que ocurra un fallo de página
+ en la paǵina inválida bajo la pila.
+ Para ello, accedemos al 
+\family typewriter
+trap.c
+\family default
+ y lo modificamos.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+AQUÍ IGUAL FALTA REVISION
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#define PGFLT_P  1	// 00001
+\end_layout
+
+\begin_layout Plain Layout
+
+#define PGFLT_W  2	// 00010
+\end_layout
+
+\begin_layout Plain Layout
+
+#define PGFLT_U  4	// 00100
+\end_layout
+
+\begin_layout Plain Layout
+
+#define PGFLT_R  8	// 01000
+\end_layout
+
+\begin_layout Plain Layout
+
+#define PGFLT_I 16	// 10000
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+case T_PGFLT:
+\end_layout
+
+\begin_layout Plain Layout
+
+	// Check for stack overflow.
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (rcr2() < KERNBASE && tf->err & PGFLT_P) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		cprintf("StackOverflow.com
+\backslash
+n");
+\end_layout
+
+\begin_layout Plain Layout
+
+		myproc()->killed = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+		break;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	// In user space, check if address is in heap.
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (myproc() != 0 && rcr2() < myproc()->sz) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		...
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(myproc() == 0 || (tf->cs&3) == 0) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		// In kernel, it must be our mistake.
+\end_layout
+
+\begin_layout Plain Layout
+
+		cprintf("unexpected trap %d from cpu %d eip %x (cr2=0x%x)
+\backslash
+n", tf->trapno, cpuid(), tf->eip, rcr2());
+\end_layout
+
+\begin_layout Plain Layout
+
+		panic("Page fault into the kernel!");
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	// Otherwise, assume process misbehaved.
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por último, en el archivo 
+\family typewriter
+vm.c
+\family default
+, para corregir la copia de memoria a la hora de crear procesos hijos con
+ el 
+\family typewriter
+fork
+\family default
+ (ya que puede intentar copiar páginas que un proceso cree tener, pero que
+ no estén mapeadas en memoria por el 
+\emph on
+lazy allocation
+\emph default
+) debemos eliminar el 
+\family typewriter
+panic
+\family default
+ que se hace en la función 
+\family typewriter
+copyuvm
+\family default
+ si encuentra una página vacía.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pde_t*
+\end_layout
+
+\begin_layout Plain Layout
+
+copyuvm(pde_t *pgdir, uint sz) {
+\end_layout
+
+\begin_layout Plain Layout
+
+	...
+\end_layout
+
+\begin_layout Plain Layout
+
+	if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+		continue;
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(*pte & PTE_P) {
+\end_layout
+
+\begin_layout Plain Layout
+
+			pa = PTE_ADDR(*pte);
+\end_layout
+
+\begin_layout Plain Layout
+
+			...	// La función continúa de manera habitual
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	return d;
+\end_layout
+
+\begin_layout Plain Layout
+
+	...
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Boletín 8
+\end_layout
+
+\begin_layout Standard
+En este último boletín, se nos pide que implementemos el uso de bloques
+ doblemente indirectos.
+ Como en los anteriores boletines, descargamos el archivo de pruebas que
+ se nos da (en este caso el archivo 
+\family typewriter
+big.c
+\family default
+) y añadimos la entrada 
+\family typewriter
+_big
+\backslash
+
+\family default
+ al archivo 
+\family typewriter
+Makefile
+\family default
+ en el apartado 
+\family typewriter
+UPROGS
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Siguiendo las instrucciones de los preliminares, añadimos 
+\family typewriter
+QEMUEXTRA=-snapshot
+\family default
+ antes de 
+\family typewriter
+QEMUOPTS
+\family default
+ en el 
+\family typewriter
+Makefile
+\family default
+.
+ También cambiamosel valor de 
+\family typewriter
+FSSIZE
+\family default
+ a 20000 en el archivo 
+\family typewriter
+param.h
+\family default
+.
+ Comprobamos que, en efecto, al ejecutar 
+\family typewriter
+big
+\family default
+, la salida es 
+\begin_inset Quotes eld
+\end_inset
+
+140 sectores
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Modificando 
+\family typewriter
+bmap
+\end_layout
+
+\begin_layout Standard
+Lo primero que debemos hacer es ir al fichero 
+\family typewriter
+fs.h
+\family default
+, en el que están definidas las constantes 
+\family typewriter
+NDIRECT
+\family default
+, 
+\family typewriter
+NINDIRECT
+\family default
+, y 
+\family typewriter
+MAXFILE
+\family default
+.
+ Lo modificamos, de forma que este sería el código final.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#define NDIRECT 11
+\end_layout
+
+\begin_layout Plain Layout
+
+#define NINDIRECT (BSIZE / sizeof(uint))
+\end_layout
+
+\begin_layout Plain Layout
+
+#define NDINDIRECT (NINDIRECT * NINDIRECT)	// Añadidio en 8.1
+\end_layout
+
+\begin_layout Plain Layout
+
+#define MAXFILE (NDIRECT + NINDIRECT + NDINDIRECT)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+// On-disk inode structure
+\end_layout
+
+\begin_layout Plain Layout
+
+struct dinode {
+\end_layout
+
+\begin_layout Plain Layout
+
+	...	// Sin modificaciones.
+\end_layout
+
+\begin_layout Plain Layout
+
+	uint addrs[NDIRECT+2];	// Data block addresses
+\end_layout
+
+\begin_layout Plain Layout
+
+};
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+De esta forma, dejamos espacio para un bloque doblemente indirecto (cuyo
+ tamaño viene indicado en la constante 
+\family typewriter
+NDINDIRECT
+\family default
+).
+ Como hemos modificado el valor de 
+\family typewriter
+NDIRECT
+\family default
+ a 11, debemos modificar también la estructura 
+\family typewriter
+inode
+\family default
+ en el archivo 
+\family typewriter
+file.h
+\family default
+ para que estos cambios no afecten a su tamaño.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+struct inode {
+\end_layout
+
+\begin_layout Plain Layout
+
+	...	// Sin modificaciones.
+\end_layout
+
+\begin_layout Plain Layout
+
+	uint addrs[NDIRECT+2];	// Data block addresses
+\end_layout
+
+\begin_layout Plain Layout
+
+};
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Por último, en el archivo 
+\family typewriter
+fs.c
+\family default
+, modificamos el código de la función 
+\family typewriter
+bmap
+\family default
+, de forma que el código final del programa sería el siguiente.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+static uint
+\end_layout
+
+\begin_layout Plain Layout
+
+bmap(struct inode *ip, uint bn)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	...	// La función continúa de forma normal.
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (bn < NINDIRECT) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		...
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	bn -= NINDIRECT;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (bn < NDINDIRECT) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		idx = bn / NINDIRECT;
+\end_layout
+
+\begin_layout Plain Layout
+
+		if ((addr = ip->addrs[NDIRECT+1]) == 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+			ip->addrs[NDIRECT+1] = addr = balloc(ip->dev);
+\end_layout
+
+\begin_layout Plain Layout
+
+		bp = bread(ip->dev, addr);
+\end_layout
+
+\begin_layout Plain Layout
+
+		a = (uint*)bp->data;
+\end_layout
+
+\begin_layout Plain Layout
+
+		if ((addr = a[idx]) == 0) {
+\end_layout
+
+\begin_layout Plain Layout
+
+			a[idx] = addr = balloc(ip->dev);
+\end_layout
+
+\begin_layout Plain Layout
+
+			log_write(bp);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		brelse(bp);
+\end_layout
+
+\begin_layout Plain Layout
+
+		idx = bn % NINDIRECT;
+\end_layout
+
+\begin_layout Plain Layout
+
+		bp = bread(ip->dev, addr);
+\end_layout
+
+\begin_layout Plain Layout
+
+		a = (uint*)bp->data;
+\end_layout
+
+\begin_layout Plain Layout
+
+		if ((addr = a[idx]) == 0) {
+\end_layout
+
+\begin_layout Plain Layout
+
+			a[idx] = addr = balloc(ip->dev);
+\end_layout
+
+\begin_layout Plain Layout
+
+			log_write(bp);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		brelse(bp);
+\end_layout
+
+\begin_layout Plain Layout
+
+		return addr;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	panic("bmap: out of range");
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Borrando ficheros doblemente enlazados
+\end_layout
+
+\begin_layout Standard
+Debemos ir al fichero 
+\family typewriter
+fs.c
+\family default
+ de nuevo y modificar la función 
+\family typewriter
+itrunc
+\family default
+.
+ El código final de la misma sería el siguiente.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Color Box
+status open
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=C,basicstyle={\ttfamily},breaklines=true,showstringspaces=false,tabsize=4,keywordstyle={\color{blue}},commentstyle={\color{gray}}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+static void
+\end_layout
+
+\begin_layout Plain Layout
+
+itrunc(struct inode *ip)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i, j;
+\end_layout
+
+\begin_layout Plain Layout
+
+	struct buf *bp, *bi;
+\end_layout
+
+\begin_layout Plain Layout
+
+	uint *a, *b;
+\end_layout
+
+\begin_layout Plain Layout
+
+	...
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (ip->addrs[NDIRECT]) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		...
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (ip->addrs[NDIRECT+1]) {
+\end_layout
+
+\begin_layout Plain Layout
+
+		bp = bread(ip->dev, ip->addrs[NDIRECT+1]);
+\end_layout
+
+\begin_layout Plain Layout
+
+		a = (uint*)bp->data;
+\end_layout
+
+\begin_layout Plain Layout
+
+		for (i = 0; i < NINDIRECT; i++) {
+\end_layout
+
+\begin_layout Plain Layout
+
+			if(a[i]) {
+\end_layout
+
+\begin_layout Plain Layout
+
+				bi = bread(ip->dev, a[i]);
+\end_layout
+
+\begin_layout Plain Layout
+
+				b = (uint*)bi->data;
+\end_layout
+
+\begin_layout Plain Layout
+
+				for (j = 0; j < NINDIRECT; j++)
+\end_layout
+
+\begin_layout Plain Layout
+
+					if (b[j])
+\end_layout
+
+\begin_layout Plain Layout
+
+						bfree(ip->dev, b[j]);
+\end_layout
+
+\begin_layout Plain Layout
+
+				brelse(bi);
+\end_layout
+
+\begin_layout Plain Layout
+
+				bfree(ip->dev, a[i]);
+\end_layout
+
+\begin_layout Plain Layout
+
+			}
+\end_layout
+
+\begin_layout Plain Layout
+
+			brelse(bp);
+\end_layout
+
+\begin_layout Plain Layout
+
+			bfree(ip->dev, ip->addrs[NDIRECT+1]);
+\end_layout
+
+\begin_layout Plain Layout
+
+			ip->addrs[NDIRECT+1] = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	ip->size = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	iupdate(ip);
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Conclusiones
+\end_layout
+
+\begin_layout Standard
+Tras realizar todos los ejercicios, nos sentimos satisfechos con el trabajo
+ realizado dada la cierta complejidad del mismo.
+ En total nos ha llevado unas 10 horas, contando con la redacción y revisión
+ de esta memoria.
+ En general, nos llevamos una valoración bastante positiva.
+\end_layout
+
+\end_body
+\end_document
