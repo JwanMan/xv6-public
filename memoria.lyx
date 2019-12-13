@@ -87,7 +87,7 @@ tcolorbox
 \begin_body
 
 \begin_layout Title
-Ampliación de Sistemas Operativos - XV6
+Ampliación de Sistemas Operativos—XV6
 \end_layout
 
 \begin_layout Author
@@ -175,10 +175,32 @@ date
 \begin_layout Standard
 Esta llamada al sistema permite ver la hora y la fecha.
  Para el formato, se ha decidido utilizar el formato 
-\series bold
-INSERTAR FORMATO DE FECHA
-\series default
-.
+\family typewriter
+\emph on
+año
+\emph default
+-
+\emph on
+mes
+\emph default
+-
+\emph on
+día
+\emph default
+T
+\emph on
+hora
+\emph default
+:
+\emph on
+minuto
+\emph default
+:
+\emph on
+segundo
+\family default
+\emph default
+, una versión simplificada del formato ISO 8601.
 \end_layout
 
 \begin_layout Standard
@@ -367,12 +389,23 @@ sysproc.c
 \family default
 .
  El código final de la llamada es este.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-IGUAL ESTARÍA BIEN DECIR QUÉ HACE ARGINT
+ Usamos la función 
+\family typewriter
+argint
+\family default
+, que lee un parámetro entero de la pila de usuario, haciendo 
+\emph on
+casting
+\emph default
+ para obtener un 
+\family typewriter
+struct rtcdate*
+\family default
+ en vez de un 
+\family typewriter
+int
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -713,12 +746,10 @@ sysfile.c
 \family default
 .
  El código final de la función es el siguiente.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-FALTA COMENTAR UN POCO QUÉ HACEMOS
+ Primero comprobamos que los parámetros sean válidos, y comprobamos si la
+ fuente y el destino son el mismo porque entonces no debemos hacer nada.
+ Entonces cerramos el descriptor de destino si estaba abierto y hacemos
+ la copia del descriptor de fichero como tal.
 \end_layout
 
 \begin_layout Standard
@@ -1012,7 +1043,7 @@ growproc
  y en su lugar únicamente aumentamos el tamaño del proceso, sin asignarle
  memoria física.
  Debemos ahora manejar los fallos de página por si el proceso intenta acceder
- a una paǵina que no tiene alojada.
+ a una página que no tiene alojada.
  En el archivo 
 \family typewriter
 trap.c
@@ -1349,18 +1380,12 @@ status open
 
 \begin_layout Standard
 Se nos pide ahora que comprobemos el caso de que ocurra un fallo de página
- en la paǵina inválida bajo la pila.
+ en la página inválida bajo la pila.
  Para ello, accedemos al 
 \family typewriter
 trap.c
 \family default
  y lo modificamos.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-AQUÍ IGUAL FALTA REVISION
 \end_layout
 
 \begin_layout Standard
@@ -1675,7 +1700,7 @@ QEMUOPTS
 Makefile
 \family default
 .
- También cambiamosel valor de 
+ También cambiamos el valor de 
 \family typewriter
 FSSIZE
 \family default
